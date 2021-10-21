@@ -1,0 +1,103 @@
+// библиотека
+#include <IRremote.h>
+
+#define redPin 9
+#define bluePin 10
+#define greenPin 11
+
+int receiverpin = 12; // пин IR
+
+IRrecv irrecv(receiverpin); // создаем экземпляр irrecv
+decode_results results;
+
+void setup()
+{
+//Serial.begin(9600);
+  
+  irrecv.enableIRIn(); // старт IR приемника
+  
+  // инициализируем пины
+  for (int i = 0 ; i < 9; i++)
+  {
+    pinMode(i, OUTPUT);
+  }
+  
+  pinMode(redPin, OUTPUT);
+  pinMode(bluePin, OUTPUT);
+  pinMode(greenPin, OUTPUT);
+  
+}
+
+// включаем в качестве параметра светодиод
+void pinOn(int pin)
+{
+  digitalWrite(pin, HIGH);
+  delay(100); // задержка 0.1 сек
+  digitalWrite(pin, LOW);
+}
+
+// метод включает светодиод
+void idIR(int value)
+{
+  switch (value)
+  {
+  	case 16582903:
+    	pinOn(0);
+    	break;
+    case 16615543:
+    	pinOn(1);
+    	break;
+    case 16599223:
+    	pinOn(2);
+    	break;
+    case 16591063:
+		pinOn(3);
+		break;
+    case 16623703:
+		pinOn(4);
+		break;
+    case 16607383:
+		pinOn(5);
+		break;
+    case 16586983:
+		pinOn(6);
+		break;
+    case 16619623:
+		pinOn(7);
+		break;
+    case 16603303:
+		pinOn(8);
+		break;
+    default:
+    	setColor(255, 0, 255);
+    	break;
+  }
+}
+
+void setColor(int red, int green, int blue)
+{
+	red = 255 - red;
+	green = 255 - green;
+	blue = 255 - blue;
+
+	analogWrite(redPin, red);
+	analogWrite(greenPin, green);
+	analogWrite(bluePin, blue);
+  
+	delay(100);
+  
+	analogWrite(redPin, 0);
+	analogWrite(greenPin, 0);
+	analogWrite(bluePin, 0);
+}
+  
+void loop()
+{
+  if (irrecv.decode(&results)) {
+    Serial.println(results.value);
+    
+    idIR(results.value);
+    
+    irrecv.resume();
+  }
+}
